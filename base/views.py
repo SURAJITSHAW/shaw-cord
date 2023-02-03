@@ -6,6 +6,8 @@ from .forms import RoomForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 
 # test data
 # rooms = [
@@ -17,6 +19,10 @@ from django.contrib import messages
 # Create your views here.
 
 def loginPage(request):
+
+    # if user is logged in, redirect to the home page
+    if request.user.is_authenticated:
+        return redirect('home')
 
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -66,6 +72,7 @@ def room(request, pk):
     return render(request, 'room.html', context)
 
 
+@login_required(login_url='login')
 def create_room(request):
     form = RoomForm()
 
@@ -81,9 +88,14 @@ def create_room(request):
     return render(request, 'create_room.html', context)
 
 
+@login_required(login_url='login')
 def update_room(request, pk):
     room = Room.objects.get(id=pk)  # the room we want to update
     form = RoomForm(instance=room)
+
+    # Resttricted permissions
+    if request.user != room.host:
+        return HttpResponse("You are not allowed to update this room!")
 
     if request.method == 'POST':
         form = RoomForm(request.POST, instance=room)
@@ -95,8 +107,13 @@ def update_room(request, pk):
     return render(request, 'create_room.html', context)
 
 
+@login_required(login_url='login')
 def delete_room(request, pk):
     room = Room.objects.get(id=pk)  # the room we want to delete
+
+    # Resttricted permissions
+    if request.user != room.host:
+        return HttpResponse("You are not allowed to delete this room!")
 
     if request.method == 'POST':
         room.delete()
