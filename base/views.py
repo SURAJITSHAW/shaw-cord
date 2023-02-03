@@ -1,7 +1,11 @@
+import re
 from django.shortcuts import render, redirect
 from django.db.models import Q
 from base.models import Room, Topic
 from .forms import RoomForm
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 
 # test data
 # rooms = [
@@ -11,6 +15,32 @@ from .forms import RoomForm
 # ]
 
 # Create your views here.
+
+def loginPage(request):
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        try: 
+            user = User.objects.get(username=username)
+        except: 
+            messages.error(request, "User doesn't esists.")
+        
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, 'User or Password does not exist!')
+
+    context = {}
+    return render(request, 'login_register.html', context)
+
+def logoutUser(request):
+    logout(request)
+    return redirect('home')
 
 
 def home(request):
