@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from base.models import Room
+from django.db.models import Q
+from base.models import Room, Topic
 from .forms import RoomForm
 
 # test data
@@ -13,8 +14,19 @@ from .forms import RoomForm
 
 
 def home(request):
-    rooms = Room.objects.all()
-    return render(request, 'home.html', {'rooms': rooms})
+
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+
+    rooms = Room.objects.filter(
+        Q(topic__name__icontains=q) |
+        Q(name__icontains=q) |
+        Q(description__icontains=q)
+    )
+
+    topics = Topic.objects.all()
+    room_count = rooms.count()
+
+    return render(request, 'home.html', {'rooms': rooms, 'topics': topics, 'room_count': room_count})
 
 
 def room(request, pk):
@@ -51,6 +63,7 @@ def update_room(request, pk):
 
     context = {'form': form}
     return render(request, 'create_room.html', context)
+
 
 def delete_room(request, pk):
     room = Room.objects.get(id=pk)  # the room we want to delete
