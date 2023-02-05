@@ -67,7 +67,6 @@ def registerPage(request):
 
     return render(request, 'login_register.html', {'form': form})
 
-
 def home(request):
 
     q = request.GET.get('q') if request.GET.get('q') != None else ''
@@ -83,10 +82,10 @@ def home(request):
 
     return render(request, 'home.html', {'rooms': rooms, 'topics': topics, 'room_count': room_count})
 
-
 def room(request, pk):
     room = Room.objects.get(id=pk)
     room_messages = room.message_set.all().order_by('-created_at')
+    participants = room.participants.all()
 
     if request.method == 'POST':
         message = Message.objects.create(
@@ -94,11 +93,11 @@ def room(request, pk):
             room = room,
             body = request.POST.get('body')
         )
+        room.participants.add(request.user)
         return redirect('room', pk=room.id)
 
-    context = {'room': room, 'room_messages': room_messages}
+    context = {'room': room, 'room_messages': room_messages, 'participants': participants}
     return render(request, 'room.html', context)
-
 
 # CRUD operations for Room
 
@@ -117,7 +116,6 @@ def create_room(request):
 
     return render(request, 'create_room.html', context)
 
-
 @login_required(login_url='login')
 def update_room(request, pk):
     room = Room.objects.get(id=pk)  # the room we want to update
@@ -135,7 +133,6 @@ def update_room(request, pk):
 
     context = {'form': form}
     return render(request, 'create_room.html', context)
-
 
 @login_required(login_url='login')
 def delete_room(request, pk):
