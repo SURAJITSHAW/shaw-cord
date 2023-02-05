@@ -79,8 +79,9 @@ def home(request):
 
     topics = Topic.objects.all()
     room_count = rooms.count()
+    room_messages = Message.objects.all()
 
-    return render(request, 'home.html', {'rooms': rooms, 'topics': topics, 'room_count': room_count})
+    return render(request, 'home.html', {'rooms': rooms, 'topics': topics, 'room_count': room_count, 'room_messages': room_messages})
 
 def room(request, pk):
     room = Room.objects.get(id=pk)
@@ -147,7 +148,6 @@ def delete_room(request, pk):
         return redirect('home')
 
     return render(request, 'delete.html', {'obj': room})
-
 
 # Delete message
 @login_required(login_url='login')
