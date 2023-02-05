@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.contrib.auth.forms import UserCreationForm
 
 # test data
 # rooms = [
@@ -19,6 +20,8 @@ from django.http import HttpResponse
 # Create your views here.
 
 def loginPage(request):
+    # variable to determine which page to render
+    page = 'login'
 
     # if user is logged in, redirect to the home page
     if request.user.is_authenticated:
@@ -41,12 +44,28 @@ def loginPage(request):
         else:
             messages.error(request, 'User or Password does not exist!')
 
-    context = {}
+    context = {'page':page}
     return render(request, 'login_register.html', context)
 
 def logoutUser(request):
     logout(request)
     return redirect('home')
+
+def registerPage(request):
+    form = UserCreationForm()
+    # process the form
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, 'Error occurred while registering')
+
+    return render(request, 'login_register.html', {'form': form})
 
 
 def home(request):
