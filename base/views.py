@@ -152,6 +152,7 @@ def delete_room(request, pk):
 # Delete message
 @login_required(login_url='login')
 def delete_message(request, pk):
+
     message = Message.objects.get(id=pk)  # the message we want to delete
 
     # Resttricted permissions
@@ -164,3 +165,12 @@ def delete_message(request, pk):
 
     return render(request, 'delete.html', {'obj': message})
 
+# User profile view
+def UserProfile(request, pk):
+    user = User.objects.get(id=pk)
+    rooms = user.room_set.all()
+    room_messages = user.message_set.all()
+    topics = Topic.objects.all()
+
+    context = {'user': user, 'rooms': rooms, 'room_messages': room_messages, 'topics': topics}
+    return render(request, 'profile.html', context)

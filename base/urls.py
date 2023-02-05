@@ -18,4 +18,7 @@ urlpatterns = [
 
     # Delete message
     path('delete-message/<str:pk>', views.delete_message, name='delete-message'),
+
+    # user profile
+    path('profile/<str:pk>', views.UserProfile, name='userProfile'),
 ]
