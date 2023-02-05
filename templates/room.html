@@ -2,4 +2,33 @@
 
 {% block content %}
     <h1>{{room.name}}</h1>
+
+    <p>{{room.description}}</p>
+
+    <!-- actual messages -->
+    <div class="message-wrapper">
+        <h3>Conversation</h3>
+        <hr>
+
+        {% for message in room_messages %}
+            <div>
+                <small>@{{message.user}} {{message.created_at|timesince}} ago</small>
+                <p>{{message.body}}</p>
+
+                <hr>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- only shows the option to share messages in rooms, only if the user is login/authenticated -->
+    {% if request.user.is_authenticated %}
+    <!-- messages form -->
+    <div class="message-form">
+        <form action="" method="post">
+            {% csrf_token %}
+
+            <input type="text" placeholder="Enter your message here..." name="body">
+        </form>
+    </div>
+    {% endif %}
 {% endblock content %}
