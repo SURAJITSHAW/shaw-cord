@@ -1,0 +1,65 @@
+{% extends 'main.html' %} {% block content %}
+
+<style>
+  .room-container {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+  }
+</style>
+
+<div class="room-container">
+  <!-- left side: actual rooma & conversation -->
+  <div>
+    <h1>{{room.name}}</h1>
+
+    <p>{{room.description}}</p>
+
+    <!-- actual messages -->
+    <div class="message-wrapper">
+      <h3>Conversation</h3>
+      <hr />
+
+      {% for message in room_messages %}
+      <div>
+        {% if request.user == message.user %}
+          <a href="{% url 'delete-message' message.id %}">Delete</a>
+        {% endif %}
+        
+        <small>@{{message.user}} {{message.created_at|timesince}} ago</small>
+        <p>{{message.body}}</p>
+
+        <hr />
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- only shows the option to share messages in rooms, only if the user is login/authenticated -->
+    {% if request.user.is_authenticated %}
+    <!-- messages form -->
+    <div class="message-form">
+      <form action="" method="post">
+        {% csrf_token %}
+
+        <input
+          type="text"
+          placeholder="Enter your message here..."
+          name="body"
+        />
+      </form>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- right side: participants column -->
+  <div>
+    <h3>Participants</h3>
+    <hr />
+
+    {% for participant in participants %}
+    <div>
+      <a href="{% url 'userProfile' participant.id %}">@{{participant.username}}</a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock content %}
