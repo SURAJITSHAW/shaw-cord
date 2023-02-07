@@ -2,7 +2,7 @@ from email import message
 from django.shortcuts import render, redirect
 from django.db.models import Q
 from base.models import Room, Topic, Message
-from .forms import RoomForm
+from .forms import RoomForm, UserForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -180,4 +180,13 @@ def UserProfile(request, pk):
 # Edit User Profile
 @login_required(login_url='login')
 def UserEdit(request):
-    return render(request, 'edit-user.html')
+    user = request.user
+    form = UserForm(instance=user)
+
+    if request.method == 'POST':
+        form = UserForm(request.POST,instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('userProfile', pk=user.id)
+
+    return render(request, 'edit-user.html', {'form': form})
