@@ -176,3 +176,8 @@ def UserProfile(request, pk):
 
     context = {'user': user, 'rooms': rooms, 'room_messages': room_messages, 'topics': topics}
     return render(request, 'profile.html', context)
+
+# Edit User Profile
+@login_required(login_url='login')
+def UserEdit(request):
+    return render(request, 'edit-user.html')

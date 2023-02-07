@@ -21,4 +21,7 @@ urlpatterns = [
 
     # user profile
     path('profile/<str:pk>', views.UserProfile, name='userProfile'),
+
+    # edit user profile
+    path('edit-user/', views.UserEdit, name='userEdit'),
 ]
