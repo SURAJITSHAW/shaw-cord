@@ -24,4 +24,7 @@ urlpatterns = [
 
     # edit user profile
     path('edit-user/', views.UserEdit, name='userEdit'),
+
+    # mobile / topics 
+    path('topics/', views.topics, name='topics'),
 ]
