@@ -198,4 +198,7 @@ def topics(request):
 
     return render(request, 'topics.html', {'topics': topics})
 
-
+# mobile view : activity
+def activity(request):
+    room_messages = Message.objects.all()
+    return render(request, 'activity.html', {'room_messages': room_messages})

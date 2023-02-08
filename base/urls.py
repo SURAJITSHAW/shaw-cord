@@ -27,4 +27,6 @@ urlpatterns = [
 
     # mobile / topics 
     path('topics/', views.topics, name='topics'),
+    # mobile / activity 
+    path('activity/', views.activity, name='activity'),
 ]
